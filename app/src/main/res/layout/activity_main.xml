@@ -1,5 +1,27 @@
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android" xmlns:app="http://schemas.android.com/apk/res-auto" android:layout_width="match_parent" android:layout_height="match_parent" android:background="#000000">
  <androidx.camera.view.PreviewView android:id="@+id/preview" android:layout_width="match_parent" android:layout_height="match_parent" app:scaleType="fillCenter"/>
- <TextView android:id="@+id/status" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_gravity="top|center_horizontal" android:layout_marginTop="48dp" android:padding="10dp" android:textColor="#FFFFFF" android:background="#66000000" android:text="AI Camera"/>
- <Button android:id="@+id/shutter" android:layout_width="88dp" android:layout_height="88dp" android:layout_gravity="bottom|center_horizontal" android:layout_marginBottom="40dp" android:text="●" android:textSize="34sp"/>
+ <se.kim.aicamera.GridOverlayView android:id="@+id/grid" android:layout_width="match_parent" android:layout_height="match_parent" android:visibility="gone"/>
+ <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_gravity="top" android:padding="16dp" android:orientation="vertical" android:background="#55000000">
+  <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:gravity="center" android:orientation="horizontal">
+   <Button android:id="@+id/flash" android:layout_width="wrap_content" android:layout_height="48dp" android:text="Blixt av"/>
+   <Button android:id="@+id/timer" android:layout_width="wrap_content" android:layout_height="48dp" android:text="Timer av"/>
+   <Button android:id="@+id/gridBtn" android:layout_width="wrap_content" android:layout_height="48dp" android:text="Rutnät"/>
+   <Button android:id="@+id/switchCamera" android:layout_width="wrap_content" android:layout_height="48dp" android:text="↻"/>
+  </LinearLayout>
+  <TextView android:id="@+id/status" android:layout_width="match_parent" android:layout_height="wrap_content" android:gravity="center" android:padding="8dp" android:textColor="#FFFFFF" android:text="AI Camera"/>
+ </LinearLayout>
+ <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_gravity="bottom" android:padding="12dp" android:orientation="vertical" android:background="#B0000000">
+  <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:gravity="center" android:orientation="horizontal">
+   <Button android:id="@+id/zoom05" android:layout_width="64dp" android:layout_height="48dp" android:text="0,5×"/>
+   <Button android:id="@+id/zoom1" android:layout_width="64dp" android:layout_height="48dp" android:text="1×"/>
+   <Button android:id="@+id/zoom2" android:layout_width="64dp" android:layout_height="48dp" android:text="2×"/>
+  </LinearLayout>
+  <SeekBar android:id="@+id/exposure" android:layout_width="match_parent" android:layout_height="wrap_content" android:max="12" android:progress="6"/>
+  <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:gravity="center" android:orientation="horizontal">
+   <Button android:id="@+id/modeNight" android:layout_width="wrap_content" android:layout_height="48dp" android:text="Natt"/>
+   <Button android:id="@+id/modePortrait" android:layout_width="wrap_content" android:layout_height="48dp" android:text="Porträtt"/>
+   <Button android:id="@+id/modePhoto" android:layout_width="wrap_content" android:layout_height="48dp" android:text="Foto"/>
+  </LinearLayout>
+  <Button android:id="@+id/shutter" android:layout_width="88dp" android:layout_height="88dp" android:layout_gravity="center_horizontal" android:text="●" android:textSize="34sp"/>
+ </LinearLayout>
 </FrameLayout>
