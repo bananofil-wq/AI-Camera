@@ -6,24 +6,69 @@ import android.net.Uri
 import android.provider.MediaStore
 import androidx.work.CoroutineWorker
 import androidx.work.WorkerParameters
+import org.json.JSONObject
+import java.net.HttpURLConnection
+import java.net.URL
+import java.util.Base64
 
-class AiEditWorker(ctx: Context, params: WorkerParameters): CoroutineWorker(ctx,params) {
+class AiEditWorker(ctx: Context, params: WorkerParameters): CoroutineWorker(ctx, params) {
  override suspend fun doWork(): Result {
-  val source=inputData.getString("source")?:return Result.failure()
-  val name=inputData.getString("name")?:"AI_photo.jpg"
-  // v0.1 pipeline hook: keep the original untouched and create the separate AI output.
-  // The remote AI image-edit provider is intentionally isolated here so no API secret is shipped in the APK.
-  val values=ContentValues().apply { put(MediaStore.Images.Media.DISPLAY_NAME,name); put(MediaStore.Images.Media.MIME_TYPE,"image/jpeg"); put(MediaStore.Images.Media.RELATIVE_PATH,"DCIM/AI Camera") }
-  val dest=applicationContext.contentResolver.insert(MediaStore.Images.Media.EXTERNAL_CONTENT_URI,values)?:return Result.retry()
-  applicationContext.contentResolver.openInputStream(Uri.parse(source)).use { input ->
-   applicationContext.contentResolver.openOutputStream(dest).use { output ->
-    if(input==null||output==null) return Result.retry()
-    input.copyTo(output)
+  val source = inputData.getString("source") ?: return Result.failure()
+  val name = inputData.getString("name") ?: "AI_photo.jpg"
+  return try {
+   val bytes = applicationContext.contentResolver.openInputStream(Uri.parse(source)).use { input ->
+    if (input == null) return Result.retry()
+    input.readBytes()
    }
+   val boundary = "AICameraBoundary"
+   val connection = (URL("$SUPABASE_URL/functions/v1/edit-photo").openConnection() as HttpURLConnection).apply {
+    requestMethod = "POST"; doOutput = true
+    connectTimeout = 30_000; readTimeout = 180_000
+    setRequestProperty("Authorization", "Bearer $SUPABASE_KEY")
+    setRequestProperty("apikey", SUPABASE_KEY)
+    setRequestProperty("Content-Type", "multipart/form-data; boundary=$boundary")
+   }
+   connection.outputStream.use { out ->
+    out.write("--$boundary\r\n".toByteArray())
+    out.write("Content-Disposition: form-data; name=\"image\"; filename=\"photo.jpg\"\r\n".toByteArray())
+    out.write("Content-Type: image/jpeg\r\n\r\n".toByteArray())
+    out.write(bytes)
+    out.write("\r\n--$boundary--\r\n".toByteArray())
+   }
+   val code = connection.responseCode
+   val response = (if (code in 200..299) connection.inputStream else connection.errorStream)
+    .bufferedReader().use { it.readText() }
+   if (code !in 200..299) return if (code >= 500 || code == 429) Result.retry() else Result.failure()
+
+   val b64 = JSONObject(response).optString("image_base64")
+   if (b64.isBlank()) return Result.retry()
+   val edited = Base64.getDecoder().decode(b64)
+
+   val values = ContentValues().apply {
+    put(MediaStore.Images.Media.DISPLAY_NAME, name)
+    put(MediaStore.Images.Media.MIME_TYPE, "image/jpeg")
+    put(MediaStore.Images.Media.RELATIVE_PATH, "DCIM/AI Camera")
+    put(MediaStore.Images.Media.IS_PENDING, 1)
+   }
+   val dest = applicationContext.contentResolver.insert(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, values) ?: return Result.retry()
+   try {
+    applicationContext.contentResolver.openOutputStream(dest).use { output ->
+     if (output == null) throw IllegalStateException("Could not open destination")
+     output.write(edited)
+    }
+    values.clear(); values.put(MediaStore.Images.Media.IS_PENDING, 0)
+    applicationContext.contentResolver.update(dest, values, null, null)
+   } catch (e: Exception) {
+    applicationContext.contentResolver.delete(dest, null, null)
+    throw e
+   }
+   Result.success()
+  } catch (e: Exception) {
+   if (runAttemptCount < 3) Result.retry() else Result.failure()
   }
-  return Result.success()
  }
  companion object {
-  const val EDIT_PROMPT = """Professional full-frame camera look with realistic fast-lens depth of field and natural lens character. Preserve face, body, expression, clothes, identity, objects and composition exactly. Clean only distracting background elements while keeping the same setting and clean subject edges. Correct white balance, recover highlights, open shadows, preserve true skin texture and natural skin tones. Apply a subtle coherent golden-hour treatment only where physically plausible: warm directional light, soft longer shadows and restrained sky/surface warmth. Finish with natural sharpening and noise reduction suitable for high-quality print. Never reshape, beautify or alter identity."""
+  private const val SUPABASE_URL = "https://zqurybtddbrbelalohnl.supabase.co"
+  private const val SUPABASE_KEY = "sb_publishable_qMmcBd_0PdHxI0guShM2rg_7UvtuvAf"
  }
 }
