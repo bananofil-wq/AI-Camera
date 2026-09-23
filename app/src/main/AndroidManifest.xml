@@ -1,5 +1,6 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android">
  <uses-permission android:name="android.permission.CAMERA"/>
+ <uses-permission android:name="android.permission.INTERNET"/>
  <uses-feature android:name="android.hardware.camera.any"/>
  <application android:theme="@style/Theme.AICamera" android:label="AI Camera">
   <activity android:name=".MainActivity" android:screenOrientation="portrait" android:exported="true">
