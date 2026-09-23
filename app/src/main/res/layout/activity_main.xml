@@ -1,27 +1,31 @@
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android" xmlns:app="http://schemas.android.com/apk/res-auto" android:layout_width="match_parent" android:layout_height="match_parent" android:background="#000000">
  <androidx.camera.view.PreviewView android:id="@+id/preview" android:layout_width="match_parent" android:layout_height="match_parent" app:scaleType="fillCenter"/>
  <se.kim.aicamera.GridOverlayView android:id="@+id/grid" android:layout_width="match_parent" android:layout_height="match_parent" android:visibility="gone"/>
- <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_gravity="top" android:padding="16dp" android:orientation="vertical" android:background="#55000000">
-  <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:gravity="center" android:orientation="horizontal">
-   <Button android:id="@+id/flash" android:layout_width="wrap_content" android:layout_height="48dp" android:text="Blixt av"/>
-   <Button android:id="@+id/timer" android:layout_width="wrap_content" android:layout_height="48dp" android:text="Timer av"/>
-   <Button android:id="@+id/gridBtn" android:layout_width="wrap_content" android:layout_height="48dp" android:text="Rutnät"/>
-   <Button android:id="@+id/switchCamera" android:layout_width="wrap_content" android:layout_height="48dp" android:text="↻"/>
+ <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_gravity="top" android:paddingStart="18dp" android:paddingEnd="18dp" android:paddingTop="22dp" android:orientation="vertical">
+  <LinearLayout android:layout_width="match_parent" android:layout_height="56dp" android:gravity="center" android:orientation="horizontal" android:background="@drawable/glass_panel" android:padding="5dp">
+   <TextView android:id="@+id/flash" style="@style/CameraChip" android:text="⚡ Av"/>
+   <TextView android:id="@+id/timer" style="@style/CameraChip" android:text="◷ Av"/>
+   <TextView android:id="@+id/gridBtn" style="@style/CameraChip" android:text="▦"/>
+   <TextView android:id="@+id/switchCamera" style="@style/CameraChip" android:text="↻"/>
   </LinearLayout>
-  <TextView android:id="@+id/status" android:layout_width="match_parent" android:layout_height="wrap_content" android:gravity="center" android:padding="8dp" android:textColor="#FFFFFF" android:text="AI Camera"/>
+  <TextView android:id="@+id/status" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_gravity="center" android:layout_marginTop="10dp" android:background="@drawable/status_pill" android:paddingStart="14dp" android:paddingEnd="14dp" android:paddingTop="7dp" android:paddingBottom="7dp" android:text="AI Camera" android:textColor="#F7F7F7" android:textSize="12sp" android:fontFamily="sans-serif-medium"/>
  </LinearLayout>
- <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_gravity="bottom" android:padding="12dp" android:orientation="vertical" android:background="#B0000000">
-  <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:gravity="center" android:orientation="horizontal">
-   <Button android:id="@+id/zoom05" android:layout_width="64dp" android:layout_height="48dp" android:text="0,5×"/>
-   <Button android:id="@+id/zoom1" android:layout_width="64dp" android:layout_height="48dp" android:text="1×"/>
-   <Button android:id="@+id/zoom2" android:layout_width="64dp" android:layout_height="48dp" android:text="2×"/>
+ <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_gravity="bottom" android:orientation="vertical" android:gravity="center" android:paddingStart="18dp" android:paddingEnd="18dp" android:paddingBottom="26dp">
+  <LinearLayout android:layout_width="wrap_content" android:layout_height="48dp" android:gravity="center" android:orientation="horizontal" android:background="@drawable/glass_panel" android:padding="4dp">
+   <TextView android:id="@+id/zoom05" style="@style/ZoomChip" android:text=".5"/>
+   <TextView android:id="@+id/zoom1" style="@style/ZoomChipActive" android:text="1×"/>
+   <TextView android:id="@+id/zoom2" style="@style/ZoomChip" android:text="2"/>
   </LinearLayout>
-  <SeekBar android:id="@+id/exposure" android:layout_width="match_parent" android:layout_height="wrap_content" android:max="12" android:progress="6"/>
-  <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:gravity="center" android:orientation="horizontal">
-   <Button android:id="@+id/modeNight" android:layout_width="wrap_content" android:layout_height="48dp" android:text="Natt"/>
-   <Button android:id="@+id/modePortrait" android:layout_width="wrap_content" android:layout_height="48dp" android:text="Porträtt"/>
-   <Button android:id="@+id/modePhoto" android:layout_width="wrap_content" android:layout_height="48dp" android:text="Foto"/>
+  <SeekBar android:id="@+id/exposure" android:layout_width="260dp" android:layout_height="32dp" android:layout_marginTop="6dp" android:max="12" android:progress="6" android:progressTint="#FFFFFF" android:thumbTint="#FFFFFF"/>
+  <LinearLayout android:layout_width="match_parent" android:layout_height="44dp" android:gravity="center" android:orientation="horizontal">
+   <TextView android:id="@+id/modeNight" style="@style/ModeText" android:text="NATT"/>
+   <TextView android:id="@+id/modePortrait" style="@style/ModeText" android:text="PORTRÄTT"/>
+   <TextView android:id="@+id/modePhoto" style="@style/ModeTextActive" android:text="FOTO"/>
   </LinearLayout>
-  <Button android:id="@+id/shutter" android:layout_width="88dp" android:layout_height="88dp" android:layout_gravity="center_horizontal" android:text="●" android:textSize="34sp"/>
+  <FrameLayout android:layout_width="match_parent" android:layout_height="104dp">
+   <View android:layout_width="58dp" android:layout_height="58dp" android:layout_gravity="center_vertical|start" android:background="@drawable/gallery_orb"/>
+   <TextView android:id="@+id/shutter" android:layout_width="82dp" android:layout_height="82dp" android:layout_gravity="center" android:gravity="center" android:background="@drawable/shutter_button" android:text="" />
+   <TextView android:layout_width="58dp" android:layout_height="58dp" android:layout_gravity="center_vertical|end" android:gravity="center" android:background="@drawable/glass_circle" android:text="AI" android:textColor="#FFFFFF" android:textSize="13sp" android:fontFamily="sans-serif-medium"/>
+  </FrameLayout>
  </LinearLayout>
 </FrameLayout>
