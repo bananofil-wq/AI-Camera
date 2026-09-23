@@ -32,10 +32,21 @@ class MainActivity : AppCompatActivity() {
   findViewById<TextView>(R.id.gridBtn).setOnClickListener{val g=findViewById<View>(R.id.grid);g.visibility=if(g.visibility==View.VISIBLE)View.GONE else View.VISIBLE}
   findViewById<TextView>(R.id.switchCamera).setOnClickListener{lens=if(lens==CameraSelector.LENS_FACING_BACK)CameraSelector.LENS_FACING_FRONT else CameraSelector.LENS_FACING_BACK;bindCamera()}
   findViewById<TextView>(R.id.zoom05).setOnClickListener{setZoom(0.5f)};findViewById<TextView>(R.id.zoom1).setOnClickListener{setZoom(1f)};findViewById<TextView>(R.id.zoom2).setOnClickListener{setZoom(2f)}
-  findViewById<TextView>(R.id.modePhoto).setOnClickListener{selectMode("photo","Foto")};findViewById<TextView>(R.id.modePortrait).setOnClickListener{selectMode("portrait","Porträtt • AI-bokeh")};findViewById<TextView>(R.id.modeNight).setOnClickListener{selectMode("night","Natt • AI-optimering")}
+  findViewById<TextView>(R.id.modePhoto).setOnClickListener{selectMode("photo","Foto");updateModeUi()}
+  findViewById<TextView>(R.id.modePortrait).setOnClickListener{selectMode("portrait","Porträtt • AI-bokeh");updateModeUi()}
+  findViewById<TextView>(R.id.modeNight).setOnClickListener{selectMode("night","Natt • AI-optimering");updateModeUi()}
+  updateModeUi()
   findViewById<SeekBar>(R.id.exposure).setOnSeekBarChangeListener(object:SeekBar.OnSeekBarChangeListener{override fun onProgressChanged(s:SeekBar?,p:Int,f:Boolean){val st=camera?.cameraInfo?.exposureState?:return;if(st.isExposureCompensationSupported)camera?.cameraControl?.setExposureCompensationIndex((p-6).coerceIn(st.exposureCompensationRange.lower,st.exposureCompensationRange.upper))};override fun onStartTrackingTouch(s:SeekBar?){};override fun onStopTrackingTouch(s:SeekBar?){}})
   previewView.setOnTouchListener{_,e->if(e.action==MotionEvent.ACTION_UP){val pt=previewView.meteringPointFactory.createPoint(e.x,e.y);camera?.cameraControl?.startFocusAndMetering(FocusMeteringAction.Builder(pt).setAutoCancelDuration(3,TimeUnit.SECONDS).build())};true}
   if(ContextCompat.checkSelfPermission(this,Manifest.permission.CAMERA)==PackageManager.PERMISSION_GRANTED)startCamera()else permission.launch(Manifest.permission.CAMERA)}
+ private fun updateModeUi(){
+  val photo=findViewById<TextView>(R.id.modePhoto);val portrait=findViewById<TextView>(R.id.modePortrait);val night=findViewById<TextView>(R.id.modeNight)
+  val active=ContextCompat.getColor(this,android.R.color.white);val inactive=android.graphics.Color.argb(185,255,255,255)
+  photo.setTextColor(if(mode=="photo") active else inactive);portrait.setTextColor(if(mode=="portrait") active else inactive);night.setTextColor(if(mode=="night") active else inactive)
+  photo.setTypeface(null,if(mode=="photo") android.graphics.Typeface.BOLD else android.graphics.Typeface.NORMAL)
+  portrait.setTypeface(null,if(mode=="portrait") android.graphics.Typeface.BOLD else android.graphics.Typeface.NORMAL)
+  night.setTypeface(null,if(mode=="night") android.graphics.Typeface.BOLD else android.graphics.Typeface.NORMAL)
+ }
  private fun setZoom(z:Float){val st=camera?.cameraInfo?.zoomState?.value?:return;camera?.cameraControl?.setZoomRatio(z.coerceIn(st.minZoomRatio,st.maxZoomRatio))}
  private fun selectMode(m:String,label:String){mode=m;status.text=label;bindCamera()}
  private fun startCamera(){val f=ProcessCameraProvider.getInstance(this);f.addListener({provider=f.get();bindCamera()},ContextCompat.getMainExecutor(this))}
